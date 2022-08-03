@@ -33,6 +33,10 @@ Buka [http://localhost:8000](http://localhost:8000) untuk melihat hasil backend 
 - Gin
 - MySQL
 
+## Design Pattern
+1. Facade : Terdapat di fungsi ConvertUang dimana untuk mengkonversi mata uang ke rupiah, cukup memanggil fungsi tersebut dan menambahkan parameter mata uang asal dan total uang yang ingin diubah dan akan dikembalikan uang yang telah dikonversi.
+2. Adapter : Karena di database tidak bisa menyimpan gambar, maka gambar diubah ke dalam bentuk base64 sehingga berubah menjadi bentuk string dan dapat disimpan di dalam database
+
 =======
 ### Marcellus Michael Herman Kahari - 13520057
 
