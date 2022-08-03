@@ -23,11 +23,11 @@ func CreateNewTransfer() gin.HandlerFunc {
 		matauang := c.PostForm("matauang")
 		total, _ := strconv.ParseFloat(hasil, 64)
 		total, _ = ConvertUang(matauang,total)
-		if err := database.DB.Where("username = ?", username).First(&user1).Error; err != nil {
+		if err := database.DB.Where("username = ? AND isAccepted = ?", username, 2).First(&user1).Error; err != nil {
 			c.JSON(400, responses.UserResponse{Status: 400, Message: "Username tidak ditemukan"})
 			return
 		}
-		if err := database.DB.Where("username = ?", usernameTujuan).First(&user2).Error; err != nil {
+		if err := database.DB.Where("username = ? AND isAccepted = ?", usernameTujuan, 2).First(&user2).Error; err != nil {
 			c.JSON(400, responses.UserResponse{Status: 400, Message: "Username tujuan tidak ditemukan"})
 			return
 		}

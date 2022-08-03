@@ -10,7 +10,7 @@ var DB *gorm.DB
 
 func NewDatabase() {
     USER := "" // Masukkan pengguna
-    PASS := "" // Masukkan password
+    PASS := "..." // Masukkan password
     HOST := "" // Masukkan host
     DBNAME := "" // Masukkan dbname
 

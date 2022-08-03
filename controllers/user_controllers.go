@@ -22,7 +22,7 @@ func CreateAdmin() gin.HandlerFunc {
 		username := c.PostForm("username")
 		password := c.PostForm("password")
 		file, err := c.FormFile("ktp")
-		fmt.Println(file)
+
 		if err != nil {
 			fmt.Println(err)
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -30,10 +30,11 @@ func CreateAdmin() gin.HandlerFunc {
 			})
 			return
 		}
-		if err := database.DB.Where("username = ?", username).First(&user).Error; err == nil {
+		if err := database.DB.Where("username = ? AND isAccepted = ?", username,2).First(&user).Error; err == nil {
 			c.JSON(400, responses.UserResponse{Status: 400, Message: "Username sudah terdaftar"})
 			return
 		}
+		fmt.Println(err)
 		var base64Encoding string
 		content, _ := file.Open()
 		byteContainer, err := ioutil.ReadAll(content)
@@ -85,7 +86,8 @@ func CreateUser() gin.HandlerFunc {
 			})
 			return
 		}
-		if err := database.DB.Where("username = ?", username).First(&user).Error; err == nil {
+		err = database.DB.Where("username = ?", username).First(&user).Error
+		if err == nil {
 			c.JSON(400, responses.UserResponse{Status: 400, Message: "Username sudah terdaftar"})
 			return
 		}
@@ -121,6 +123,7 @@ func CreateUser() gin.HandlerFunc {
 			return
 		}
 		c.JSON(200, responses.UserResponse{Status: 200, Message: "Sukses menambah pengguna, silahkan menunggu verifikasi dari admin"})
+		return 
 	}
 }
 
@@ -130,7 +133,7 @@ func GetAllUsers() gin.HandlerFunc {
 		var users []database.User
 		defer cancel()
 
-		database.DB.Find(&users)
+		database.DB.Where("isAdmin = ?", 0).Find(&users)
 
 		c.JSON(http.StatusOK, gin.H{"data": users})
 	}
@@ -168,9 +171,7 @@ func LoginUser() gin.HandlerFunc {
 		defer cancel()
 		username := c.PostForm("username")
 		password := c.PostForm("password")
-		fmt.Println(username)
-		fmt.Println(password)
-		if err := database.DB.Where("username = ?", username).First(&users).Error; err != nil {
+		if err := database.DB.Where("username = ? AND isAccepted = ?", username, 2).Find(&users).Error; err != nil {
 			c.JSON(400, gin.H{"message": "username tidak ditemukan"})
 		} else {
 			fmt.Println(users.Password)
@@ -186,7 +187,6 @@ func LoginUser() gin.HandlerFunc {
 					c.JSON(http.StatusBadRequest, gin.H{"error": err})
 					return
 				}
-				fmt.Println(token)
 				c.JSON(http.StatusOK, gin.H{"message": "berhasil login", "data": token, "isAdmin": users.IsAdmin, "id": users.Id, "username":users.Username})
 				return
 			} else if users.IsAccepted == 1{
